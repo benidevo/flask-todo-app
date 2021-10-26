@@ -1,5 +1,5 @@
+from datetime import datetime
 from flask_restful import Resource, reqparse
-from itsdangerous import exc
 
 from models.book import BookModel
 
@@ -54,26 +54,18 @@ class Book(Resource):
     parser.add_argument(
         'title',
         type=str,
-        required=True,
-        help='This field cannot be blank'
     )
     parser.add_argument(
         'author',
         type=str,
-        required=True,
-        help='This field cannot be blank'
     )
     parser.add_argument(
         'description',
         type=str,
-        required=True,
-        help='This field cannot be blank'
     )
     parser.add_argument(
         'published_year',
         type=str,
-        required=True,
-        help='This field cannot be blank'
     )
     
     def get(self, id):
@@ -88,7 +80,29 @@ class Book(Resource):
         return book.json()
     
     def put(self, id):
-        pass
+        try:
+            book = BookModel.find_by_id(id)
+        except:
+            return {'message': 'internal error while trying to get book'}, 505
+            
+        if not book:
+            return {'message': 'Book with the given id not found'}, 404
+        
+        data = self.parser.parse_args()
+        
+        if data['title']: 
+            book.title = data['title']
+        if data['author']:
+            book.author = data['author']
+        if data['description']:
+            book.description = data['description']
+        if data['published_year']:
+            book.published_year = data['published_year']
+        
+        book.updated_at = datetime.now()
+        
+        book.save()
+        return book.json()
 
     def delete(self, id):
         try:

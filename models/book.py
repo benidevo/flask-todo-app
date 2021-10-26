@@ -21,7 +21,7 @@ class BookModel(db.Model):
         self.published_year = published_year
     
     def __repr__(self):
-        return f' {self.id} {self.title} {self.author}'
+        return f'{self.id} {self.title} {self.author}'
     
     @classmethod
     def find_by_id(cls, id):
@@ -33,7 +33,9 @@ class BookModel(db.Model):
             'title': self.title, 
             'author': self.author, 
             'description': self.description, 
-            'published_year': self.published_year
+            'published_year': self.published_year,
+            'created_at': str(self.created_at),
+            'updated_at': str(self.updated_at) if self.updated_at else None
         }
     
     def save(self): 
